@@ -2,129 +2,122 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rococo Atelier | 洛可可拼图工坊</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rococo Atelier - 洛可可复古工坊</title>
     <style>
         :root {
-            --palace-white: #F9F7F2;
-            --royal-gold: #C5A059;
-            --sage-green: #8A9A5B;
-            --silk-grey: #E5E1D8;
-            --text-main: #4A453C;
+            --bg: #F9F4F0; /* 复古象牙底色 */
+            --accent-pink: #F5D5D5; /* 蓬帕杜粉 */
+            --accent-blue: #D1E1E4; /* 凡尔赛青 */
+            --text-brown: #6D5D5D; /* 复古棕 */
+            --panel-bg: rgba(255, 255, 255, 0.8);
         }
 
         body { 
-            font-family: 'Optima', 'PingFang SC', serif; 
-            background: var(--palace-white); color: var(--text-main);
-            margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center;
+            font-family: 'Georgia', 'serif'; 
+            background-color: var(--bg); 
+            color: var(--text-brown);
+            margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
         }
 
         .container { width: 100%; max-width: 600px; }
-        
-        /* 高级感面板 */
+
+        /* 洛可可浮雕感面板 */
         .panel {
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid var(--silk-grey);
-            border-radius: 4px; padding: 24px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
-            margin-bottom: 24px; backdrop-filter: blur(10px);
+            background: var(--panel-bg);
+            border: 1px solid var(--accent-pink);
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(109, 93, 93, 0.1);
+            backdrop-filter: blur(10px);
+            margin-bottom: 25px;
         }
 
-        h2 { 
-            text-align: center; color: var(--royal-gold); 
-            letter-spacing: 4px; font-weight: 300; text-transform: uppercase;
-            border-bottom: 1px solid var(--silk-grey); padding-bottom: 15px;
-        }
+        h2 { text-align: center; color: var(--text-brown); letter-spacing: 2px; font-weight: normal; margin-top: 0; }
 
-        /* 素材展示区 */
-        .asset-library {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-            gap: 8px; margin: 15px 0; max-height: 150px; overflow-y: auto;
-            border: 1px inset var(--silk-grey); padding: 10px; background: #fff;
-        }
-        .asset-thumb { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 2px; }
+        .section-title { font-size: 0.85rem; text-transform: uppercase; color: #A89090; margin: 15px 0 10px; border-bottom: 1px solid var(--accent-pink); }
 
-        .section-title { font-size: 12px; color: var(--royal-gold); margin-top: 20px; border-left: 2px solid var(--royal-gold); padding-left: 8px; }
-
-        .control-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
-        .control-item { display: flex; flex-direction: column; gap: 4px; }
+        /* 控件样式 */
+        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .full-width { grid-column: span 2; }
         
-        label { font-size: 11px; color: #888; text-transform: uppercase; }
-        
+        label { display: block; font-size: 0.8rem; margin-bottom: 4px; padding-left: 4px; }
         input, select {
-            border: none; border-bottom: 1px solid var(--silk-grey);
-            background: transparent; padding: 8px 0; font-size: 14px; outline: none; transition: 0.3s;
+            width: 100%; padding: 12px; border: 1px solid var(--accent-blue);
+            border-radius: 12px; box-sizing: border-box; background: white;
+            color: var(--text-brown); outline: none; transition: 0.3s;
         }
-        input:focus { border-bottom: 1px solid var(--royal-gold); }
+        input:focus { border-color: var(--accent-pink); box-shadow: 0 0 8px var(--accent-pink); }
 
-        /* 开关设计 */
-        .switch-row { flex-direction: row; align-items: center; justify-content: space-between; padding: 10px 0; }
-
-        button.main-btn {
-            width: 100%; margin-top: 30px; padding: 16px;
-            background: var(--royal-gold); color: white; border: none;
-            letter-spacing: 2px; font-weight: bold; cursor: pointer;
-            transition: all 0.4s ease;
+        /* 素材预览区 */
+        .preview-pool {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 8px; margin-top: 10px; max-height: 150px; overflow-y: auto;
+            background: rgba(255,255,255,0.4); padding: 10px; border-radius: 12px;
         }
-        button.main-btn:hover { filter: brightness(1.1); }
-        button.secondary-btn { background: #eee; color: #666; font-size: 12px; padding: 5px; margin-top: 5px; cursor: pointer; border:none; }
+        .preview-pool img { width: 100%; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid var(--accent-pink); }
 
-        #resultContainer img { width: 100%; margin-top: 20px; border: 8px solid white; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        /* 按钮 */
+        .btn-main {
+            width: 100%; padding: 16px; background: var(--accent-pink);
+            color: var(--text-brown); border: none; border-radius: 30px;
+            font-size: 1rem; font-weight: bold; cursor: pointer;
+            margin-top: 20px; box-shadow: 0 4px 15px rgba(245, 213, 213, 0.6);
+        }
+        .btn-clear { background: var(--accent-blue); margin-top: 10px; font-size: 0.8rem; }
+
+        /* 结果展示 */
+        #resultContainer img { width: 100%; border-radius: 15px; margin-top: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="panel">
-        <h2>Atelier</h2>
+        <h2>𝑅𝑜𝑐𝑜𝑐𝑜 𝐴𝑡𝑒𝑙𝑖𝑒𝑟</h2>
         
-        <div class="control-item">
-            <label>Upload Collection</label>
-            <input type="file" id="fileInput" multiple accept="image/*">
-            <div class="asset-library" id="assetLib"></div>
-            <button class="secondary-btn" onclick="clearData()">清空所有缓存图片</button>
-        </div>
+        <div class="section-title">Step 1. 素材整备</div>
+        <input type="file" id="fileInput" multiple accept="image/*" style="font-size: 0.7rem;">
+        <div class="preview-pool" id="pool"></div>
+        <button class="btn-main btn-clear" onclick="clearStorage()">清空已存图片</button>
 
-        <p class="section-title">Layout / 布局</p>
-        <div class="control-row">
-            <div class="control-item"><label>Rows</label><input type="number" id="rows" value="3"></div>
-            <div class="control-item"><label>Cols</label><input type="number" id="cols" value="3"></div>
-        </div>
-        <div class="control-row">
-            <div class="control-item">
-                <label>Aspect Ratio (W:H)</label>
-                <div style="display:flex; gap:5px">
-                    <input type="number" id="ratioW" value="1" step="0.1">
-                    <input type="number" id="ratioH" value="1" step="0.1">
+        <div class="section-title">Step 2. 构图参数</div>
+        <div class="control-grid">
+            <div><label>起始编号</label><input type="number" id="startNum" value="1"></div>
+            <div><label>导出画质 (20-100%)</label><input type="number" id="quality" value="80" min="20" max="100"></div>
+            <div><label>行数</label><input type="number" id="rows" value="3"></div>
+            <div><label>列数</label><input type="number" id="cols" value="3"></div>
+            <div class="full-width">
+                <label>自定义比例 (宽:高)</label>
+                <div style="display: flex; gap: 5px;">
+                    <input type="number" id="ratioW" value="1" placeholder="宽">
+                    <input type="number" id="ratioH" value="1" placeholder="高">
                 </div>
             </div>
-            <div class="control-item"><label>Quality (0.2-1.0)</label><input type="range" id="quality" min="0.2" max="1" step="0.1" value="0.8"></div>
         </div>
 
-        <p class="section-title">Typography / 字体</p>
-        <div class="control-row">
-            <div class="control-item"><label>Start No.</label><input type="number" id="startNum" value="1"></div>
-            <div class="control-item"><label>Font Size</label><input type="number" id="fontSize" value="45"></div>
-        </div>
-        <div class="control-row">
-            <div class="control-item"><label>Font Color</label><input type="color" id="fontColor" value="#FFFFFF"></div>
-            <div class="control-item"><label>Position</label>
+        <div class="section-title">Step 3. 字体美学</div>
+        <div class="control-grid">
+            <div><label>字体大小</label><input type="number" id="fSize" value="40"></div>
+            <div><label>字体颜色</label><input type="color" id="fColor" value="#ffffff"></div>
+            <div>
+                <label>开启描边</label>
+                <select id="sEnable"><option value="yes">开启</option><option value="no">关闭</option></select>
+            </div>
+            <div><label>描边颜色</label><input type="color" id="sColor" value="#6D5D5D"></div>
+            <div>
+                <label>编号位置</label>
                 <select id="pos">
-                    <option value="lt">Top-Left</option><option value="lb">Bottom-Left</option>
-                    <option value="cc">Center</option><option value="rb" selected>Bottom-Right</option>
+                    <option value="rb">右下</option><option value="lb">左下</option>
+                    <option value="rt">右上</option><option value="lt">左上</option>
+                    <option value="cc">中心</option>
                 </select>
             </div>
+            <div><label>字体阴影</label><select id="shEnable"><option value="yes">有</option><option value="no">无</option></select></div>
         </div>
 
-        <p class="section-title">Stroke & Effects / 描边与阴影</p>
-        <div class="control-row">
-            <div class="control-item switch-row">
-                <label>Enable Stroke</label><input type="checkbox" id="strokeEnable" checked>
-            </div>
-            <div class="control-item"><label>Stroke Color</label><input type="color" id="strokeColor" value="#000000"></div>
-        </div>
-
-        <button class="main-btn" onclick="generate()">GENERATE ARTWORK</button>
+        <button class="btn-main" onclick="generate()">开始织造拼图</button>
     </div>
 
     <div id="resultContainer"></div>
@@ -132,97 +125,96 @@
 
 <script>
     let db;
-    // 初始化数据库
-    const request = indexedDB.open("RococoAtelier", 1);
+    // 初始化 IndexedDB
+    const request = indexedDB.open("RococoDB", 1);
     request.onupgradeneeded = e => e.target.result.createObjectStore("images", { autoIncrement: true });
-    request.onsuccess = e => { db = e.target.result; displayAssets(); };
+    request.onsuccess = e => { db = e.target.result; loadFromDB(); };
 
+    // 处理文件上传并存入 DB
     document.getElementById('fileInput').onchange = async (e) => {
         const files = Array.from(e.target.files);
         const tx = db.transaction("images", "readwrite");
         const store = tx.objectStore("images");
-        for (let f of files) store.add(f);
-        tx.oncomplete = displayAssets;
+        for (const f of files) store.add(f);
+        tx.oncomplete = loadFromDB;
     };
 
-    async function displayAssets() {
-        const lib = document.getElementById('assetLib');
-        lib.innerHTML = "";
+    async function loadFromDB() {
+        const pool = document.getElementById('pool');
+        pool.innerHTML = "";
         const tx = db.transaction("images", "readonly");
-        const store = tx.objectStore("images");
-        const cursor = store.openCursor();
-        cursor.onsuccess = e => {
-            const res = e.target.result;
-            if (res) {
+        tx.objectStore("images").openCursor().onsuccess = e => {
+            const cursor = e.target.result;
+            if (cursor) {
                 const img = document.createElement('img');
-                img.className = 'asset-thumb';
-                img.src = URL.createObjectURL(res.value);
-                lib.appendChild(img);
-                res.continue();
+                img.src = URL.createObjectURL(cursor.value);
+                pool.appendChild(img);
+                cursor.continue();
             }
         };
     }
 
-    function clearData() {
-        const tx = db.transaction("images", "readwrite");
-        tx.objectStore("images").clear();
-        tx.oncomplete = () => { location.reload(); };
+    function clearStorage() {
+        db.transaction("images", "readwrite").objectStore("images").clear().onsuccess = () => location.reload();
     }
 
     async function generate() {
-        const tx = db.transaction("images", "readonly");
         const images = [];
-        const cursor = tx.objectStore("images").openCursor();
-        cursor.onsuccess = async e => {
-            const res = e.target.result;
-            if (res) { images.push(res.value); res.continue(); }
-            else { proceed(images); }
+        const tx = db.transaction("images", "readonly");
+        tx.objectStore("images").openCursor().onsuccess = async e => {
+            const cursor = e.target.result;
+            if (cursor) { images.push(cursor.value); cursor.continue(); }
+            else { startCanvas(images); }
         };
     }
 
-    async function proceed(files) {
-        if (files.length === 0) return alert("素材库空空如也哦~");
+    async function startCanvas(imageFiles) {
+        if (imageFiles.length === 0) return alert("工坊里还没有素材呢~");
+        
         const container = document.getElementById('resultContainer');
-        container.innerHTML = "Processing...";
-
-        const rows = parseInt(document.getElementById('rows').value);
-        const cols = parseInt(document.getElementById('cols').value);
+        container.innerHTML = "";
+        
         const rW = parseFloat(document.getElementById('ratioW').value);
         const rH = parseFloat(document.getElementById('ratioH').value);
-        const quality = parseFloat(document.getElementById('quality').value);
+        const rows = parseInt(document.getElementById('rows').value);
+        const cols = parseInt(document.getElementById('cols').value);
+        const q = parseInt(document.getElementById('quality').value) / 100;
         const startNum = parseInt(document.getElementById('startNum').value);
         
-        const itemW = 500; // 固定基础宽度
+        const itemW = 400; // 固定单图基准宽
         const itemH = itemW * (rH / rW);
         const perPage = rows * cols;
 
-        for (let i = 0; i < files.length; i += perPage) {
+        for (let i = 0; i < imageFiles.length; i += perPage) {
             const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
             canvas.width = cols * itemW;
             canvas.height = rows * itemH;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = "#fff"; ctx.fillRect(0,0,canvas.width,canvas.height);
 
             for (let j = 0; j < perPage; j++) {
                 const idx = i + j;
-                if (idx >= files.length) break;
-                const img = await loadImage(URL.createObjectURL(files[idx]));
-                const c = j % cols;
-                const r = Math.floor(j / cols);
-                drawCover(ctx, img, c * itemW, r * itemH, itemW, itemH);
-                drawText(ctx, startNum + idx, c * itemW, r * itemH, itemW, itemH);
+                if (idx >= imageFiles.length) break;
+                
+                const img = await loadImage(URL.createObjectURL(imageFiles[idx]));
+                const x = (j % cols) * itemW;
+                const y = Math.floor(j / cols) * itemH;
+                
+                // 裁切绘制
+                drawCover(ctx, img, x, y, itemW, itemH);
+                // 绘制编号
+                drawText(ctx, startNum + idx, x, y, itemW, itemH);
             }
             const resImg = document.createElement('img');
-            resImg.src = canvas.toDataURL('image/jpeg', quality);
+            resImg.src = canvas.toDataURL("image/jpeg", q);
             container.appendChild(resImg);
         }
-        container.firstChild.textContent = "";
     }
 
     function loadImage(url) { return new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = url; }); }
 
     function drawCover(ctx, img, x, y, w, h) {
-        const iR = img.width / img.height;
-        const tR = w / h;
+        const iR = img.width / img.height, tR = w / h;
         let sx, sy, sw, sh;
         if (iR > tR) { sh = img.height; sw = sh * tR; sx = (img.width - sw) / 2; sy = 0; }
         else { sw = img.width; sh = sw / tR; sx = 0; sy = (img.height - sh) / 2; }
@@ -230,28 +222,29 @@
     }
 
     function drawText(ctx, text, x, y, w, h) {
-        const size = parseInt(document.getElementById('fontSize').value);
-        const color = document.getElementById('fontColor').value;
-        const pos = document.getElementById('pos').value;
-        const strokeOn = document.getElementById('strokeEnable').checked;
-        const strokeColor = document.getElementById('strokeColor').value;
-
-        ctx.font = `bold ${size}px 'Optima', sans-serif`;
+        const size = parseInt(document.getElementById('fSize').value);
+        ctx.font = `bold ${size}px serif`;
         ctx.textAlign = "center"; ctx.textBaseline = "middle";
         
-        let tx, ty, pad = size * 0.8;
-        if (pos === 'lt') { tx = x + pad; ty = y + pad; }
-        else if (pos === 'lb') { tx = x + pad; ty = y + h - pad; }
-        else if (pos === 'rb') { tx = x + w - pad; ty = y + h - pad; }
+        if(document.getElementById('shEnable').value === 'yes') {
+            ctx.shadowColor = "rgba(0,0,0,0.5)"; ctx.shadowBlur = 8;
+        } else { ctx.shadowBlur = 0; }
+
+        let tx, ty, p = size * 0.8;
+        const pos = document.getElementById('pos').value;
+        if (pos === 'lt') { tx = x + p; ty = y + p; }
+        else if (pos === 'rt') { tx = x + w - p; ty = y + p; }
+        else if (pos === 'lb') { tx = x + p; ty = y + h - p; }
+        else if (pos === 'rb') { tx = x + w - p; ty = y + h - p; }
         else { tx = x + w/2; ty = y + h/2; }
 
-        if (strokeOn) {
-            ctx.strokeStyle = strokeColor;
-            ctx.lineWidth = size / 5;
-            ctx.strokeText(text, tx, ty);
+        if(document.getElementById('sEnable').value === 'yes') {
+            ctx.strokeStyle = document.getElementById('sColor').value;
+            ctx.lineWidth = size / 6; ctx.strokeText(text, tx, ty);
         }
-        ctx.fillStyle = color;
+        ctx.fillStyle = document.getElementById('fColor').value;
         ctx.fillText(text, tx, ty);
+        ctx.shadowBlur = 0;
     }
 </script>
 </body>
