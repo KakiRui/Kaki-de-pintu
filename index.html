@@ -1,1 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>图片自动拼图与编号工具</title>
+    <style>
+        :root { --primary-color: #4a90e2; }
+        body { font-family: -apple-system, sans-serif; background: #f4f7f9; padding: 20px; color: #333; }
+        .controls { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .control-group { display: flex; flex-direction: column; gap: 5px; }
+        label { font-weight: bold; font-size: 14px; }
+        input, select, button { padding: 8px; border: 1px solid #ddd; border-radius: 6px; }
+        button { background: var(--primary-color); color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        button:hover { background: #357abd; }
+        
+        .output-container { display: flex; flex-direction: column; gap: 40px; align-items: center; }
+        .grid-page { 
+            background: white; 
+            padding: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: grid;
+            gap: 10px; /* 拼图间隙 */
+        }
+        .img-wrapper { 
+            position: relative; 
+            background: #eee; 
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .number-tag {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .empty-slot { background: #f9f9f9; border: 1px dashed #ccc; }
+        .page-info { text-align: center; margin-bottom: 10px; color: #666; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <h2>🖼️ 图片自动拼图与编号系统</h2>
+
+    <div class="controls">
+        <div class="control-group">
+            <label>1. 上传图片</label>
+            <input type="file" id="fileInput" multiple accept="image/*">
+        </div>
+        <div class="control-group">
+            <label>2. 起始编号</label>
+            <input type="number" id="startNum" value="1">
+        </div>
+        <div class="control-group">
+            <label>3. 拼图布局 (行 × 列)</label>
+            <div style="display: flex; gap: 5px;">
+                <input type="number" id="rows" value="3" min="1" placeholder="行">
+                <input type="number" id="cols" value="3" min="1" placeholder="列">
+            </div>
+        </div>
+        <div class="control-group">
+            <label>4. 单图比例</label>
+            <select id="aspectRatio">
+                <option value="1/1">1:1 (正方形)</option>
+                <option value="9/16">9:16 (纵向长高)</option>
+                <option value="16/9">16:9 (横向宽屏)</option>
+                <option value="3/4">3:4 (常规人像)</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>5. 单图宽度 (px)</label>
+            <input type="number" id="baseWidth" value="200">
+        </div>
+        <button onclick="generateGrid()">生成拼图</button>
+    </div>
+
+    <div id="output" class="output-container">
+        </div>
+
+    <script>
+        function generateGrid() {
+            const fileInput = document.getElementById('fileInput');
+            const output = document.getElementById('output');
+            const startNum = parseInt(document.getElementById('startNum').value);
+            const rows = parseInt(document.getElementById('rows').value);
+            const cols = parseInt(document.getElementById('cols').value);
+            const ratioParts = document.getElementById('aspectRatio').value.split('/');
+            const baseWidth = parseInt(document.getElementById('baseWidth').value);
+            
+            const ratio = ratioParts[0] / ratioParts[1];
+            const baseHeight = baseWidth / ratio;
+            const imagesPerPage = rows * cols;
+            
+            if (fileInput.files.length === 0) {
+                alert("请先选择图片哦！");
+                return;
+            }
+
+            output.innerHTML = ""; // 清空上次内容
+            const files = Array.from(fileInput.files);
+            const totalPages = Math.ceil(files.length / imagesPerPage);
+
+            for (let p = 0; p < totalPages; p++) {
+                // 创建页容器
+                const pageWrapper = document.createElement('div');
+                
+                const info = document.createElement('div');
+                info.className = "page-info";
+                info.innerText = `第 ${p + 1} 张拼图`;
+                pageWrapper.appendChild(info);
+
+                const grid = document.createElement('div');
+                grid.className = "grid-page";
+                grid.style.gridTemplateColumns = `repeat(${cols}, ${baseWidth}px)`;
+                grid.style.gridTemplateRows = `repeat(${rows}, ${baseHeight}px)`;
+
+                // 填充当前页的图片
+                for (let i = 0; i < imagesPerPage; i++) {
+                    const fileIndex = p * imagesPerPage + i;
+                    const wrapper = document.createElement('div');
+                    wrapper.className = "img-wrapper";
+                    wrapper.style.width = baseWidth + "px";
+                    wrapper.style.height = baseHeight + "px";
+
+                    if (fileIndex < files.length) {
+                        // 有图片的情况
+                        const img = document.createElement('img');
+                        img.src = URL.createObjectURL(files[fileIndex]);
+                        
+                        const tag = document.createElement('span');
+                        tag.className = "number-tag";
+                        tag.innerText = startNum + fileIndex;
+
+                        wrapper.appendChild(img);
+                        wrapper.appendChild(tag);
+                    } else {
+                        // 空白位的情况
+                        wrapper.classList.add('empty-slot');
+                    }
+                    grid.appendChild(wrapper);
+                }
+                
+                pageWrapper.appendChild(grid);
+                output.appendChild(pageWrapper);
+            }
+        }
+    </script>
+</body>
+</html>
 
