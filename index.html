@@ -2,156 +2,260 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>图片自动拼图与编号工具</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rococo Puzzler - 洛可可拼图工坊</title>
     <style>
-        :root { --primary-color: #4a90e2; }
-        body { font-family: -apple-system, sans-serif; background: #f4f7f9; padding: 20px; color: #333; }
-        .controls { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        .control-group { display: flex; flex-direction: column; gap: 5px; }
-        label { font-weight: bold; font-size: 14px; }
-        input, select, button { padding: 8px; border: 1px solid #ddd; border-radius: 6px; }
-        button { background: var(--primary-color); color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        button:hover { background: #357abd; }
+        /* 洛可可风格配色方案 */
+        :root {
+            --cream: #FFF5E1;
+            --gold: #D4AF37;
+            --rose: #FADADD;
+            --blue: #AEC6CF;
+            --text: #5D4037;
+        }
+
+        body { 
+            font-family: 'Palatino', 'Microsoft YaHei', serif; 
+            background-color: var(--cream); 
+            color: var(--text);
+            margin: 0; padding: 15px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        /* 移动端适配容器 */
+        .container { width: 100%; max-width: 500px; }
+
+        .panel {
+            background: white;
+            border: 2px solid var(--gold);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.1);
+            margin-bottom: 20px;
+        }
+
+        h2 { text-align: center; color: var(--gold); font-size: 1.5rem; margin-top: 0; }
+
+        .control-group { margin-bottom: 15px; }
+        label { display: block; font-size: 0.9rem; margin-bottom: 5px; font-weight: bold; }
         
-        .output-container { display: flex; flex-direction: column; gap: 40px; align-items: center; }
-        .grid-page { 
-            background: white; 
-            padding: 15px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            display: grid;
-            gap: 10px; /* 拼图间隙 */
+        input[type="number"], input[type="text"], select {
+            width: 100%; padding: 10px; border: 1px solid var(--rose);
+            border-radius: 10px; box-sizing: border-box; background: var(--cream);
         }
-        .img-wrapper { 
-            position: relative; 
-            background: #eee; 
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+
+        .flex-row { display: flex; gap: 10px; }
+        .flex-row > * { flex: 1; }
+
+        button {
+            width: 100%; padding: 15px; background: var(--gold);
+            color: white; border: none; border-radius: 25px;
+            font-size: 1rem; font-weight: bold; cursor: pointer;
+            box-shadow: 0 4px 0 #B8962E; transition: 0.2s;
         }
-        .img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-        .number-tag {
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            background: rgba(0, 0, 0, 0.6);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: bold;
+        button:active { transform: translateY(3px); box-shadow: none; }
+
+        #resultContainer { width: 100%; margin-top: 20px; }
+        .result-img { 
+            width: 100%; border: 3px solid white; border-radius: 10px; 
+            margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
         }
-        .empty-slot { background: #f9f9f9; border: 1px dashed #ccc; }
-        .page-info { text-align: center; margin-bottom: 10px; color: #666; font-size: 14px; }
+        .download-tip { text-align: center; font-size: 0.8rem; color: #888; }
     </style>
 </head>
 <body>
 
-    <h2>🖼️ 图片自动拼图与编号系统</h2>
-
-    <div class="controls">
+<div class="container">
+    <div class="panel">
+        <h2>✨ 拼图实验室</h2>
+        
         <div class="control-group">
-            <label>1. 上传图片</label>
+            <label>1. 上传素材</label>
             <input type="file" id="fileInput" multiple accept="image/*">
         </div>
-        <div class="control-group">
-            <label>2. 起始编号</label>
-            <input type="number" id="startNum" value="1">
-        </div>
-        <div class="control-group">
-            <label>3. 拼图布局 (行 × 列)</label>
-            <div style="display: flex; gap: 5px;">
-                <input type="number" id="rows" value="3" min="1" placeholder="行">
-                <input type="number" id="cols" value="3" min="1" placeholder="列">
+
+        <div class="control-group flex-row">
+            <div>
+                <label>起始编号</label>
+                <input type="number" id="startNum" value="1">
+            </div>
+            <div>
+                <label>单图比例</label>
+                <select id="aspectRatio">
+                    <option value="1:1">1:1 正方形</option>
+                    <option value="3:4">3:4 人像</option>
+                    <option value="9:16">9:16 长屏</option>
+                </select>
             </div>
         </div>
-        <div class="control-group">
-            <label>4. 单图比例</label>
-            <select id="aspectRatio">
-                <option value="1/1">1:1 (正方形)</option>
-                <option value="9/16">9:16 (纵向长高)</option>
-                <option value="16/9">16:9 (横向宽屏)</option>
-                <option value="3/4">3:4 (常规人像)</option>
-            </select>
+
+        <div class="control-group flex-row">
+            <div>
+                <label>行数</label>
+                <input type="number" id="rows" value="3">
+            </div>
+            <div>
+                <label>列数</label>
+                <input type="number" id="cols" value="3">
+            </div>
         </div>
+
+        <hr style="border: 0.5px solid var(--rose); margin: 20px 0;">
+
         <div class="control-group">
-            <label>5. 单图宽度 (px)</label>
-            <input type="number" id="baseWidth" value="200">
+            <label>字体美化 (大小/颜色/描边颜色)</label>
+            <div class="flex-row">
+                <input type="number" id="fontSize" value="40" title="字体大小">
+                <input type="color" id="fontColor" value="#ffffff">
+                <input type="color" id="strokeColor" value="#000000">
+            </div>
         </div>
-        <button onclick="generateGrid()">生成拼图</button>
+
+        <div class="control-group">
+            <label>编号位置 & 效果</label>
+            <div class="flex-row">
+                <select id="pos">
+                    <option value="lt">左上</option>
+                    <option value="rt">右上</option>
+                    <option value="lb">左下</option>
+                    <option value="rb" selected>右下</option>
+                    <option value="cc">居中</option>
+                </select>
+                <select id="shadow">
+                    <option value="yes">有阴影</option>
+                    <option value="no">无阴影</option>
+                </select>
+            </div>
+        </div>
+
+        <button onclick="processImages()">生成合并大图</button>
     </div>
 
-    <div id="output" class="output-container">
-        </div>
+    <div id="resultContainer"></div>
+    <p class="download-tip" id="tip" style="display:none;">生成成功！长按上方图片即可保存到相册</p>
+</div>
 
-    <script>
-        function generateGrid() {
-            const fileInput = document.getElementById('fileInput');
-            const output = document.getElementById('output');
-            const startNum = parseInt(document.getElementById('startNum').value);
-            const rows = parseInt(document.getElementById('rows').value);
-            const cols = parseInt(document.getElementById('cols').value);
-            const ratioParts = document.getElementById('aspectRatio').value.split('/');
-            const baseWidth = parseInt(document.getElementById('baseWidth').value);
-            
-            const ratio = ratioParts[0] / ratioParts[1];
-            const baseHeight = baseWidth / ratio;
-            const imagesPerPage = rows * cols;
-            
-            if (fileInput.files.length === 0) {
-                alert("请先选择图片哦！");
-                return;
+<script>
+    async function processImages() {
+        const files = Array.from(document.getElementById('fileInput').files);
+        if (files.length === 0) return alert("宝贝，还没选图片呢~");
+
+        const btn = document.querySelector('button');
+        btn.innerText = "正在裁切织造中...";
+        
+        const rows = parseInt(document.getElementById('rows').value);
+        const cols = parseInt(document.getElementById('cols').value);
+        const startNum = parseInt(document.getElementById('startNum').value);
+        const ratioStr = document.getElementById('aspectRatio').value.split(':');
+        const ratio = ratioStr[0] / ratioStr[1];
+        
+        // 固定单图宽度为 400px，保证清晰度与文件体积平衡
+        const itemW = 400;
+        const itemH = itemW / ratio;
+        const perPage = rows * cols;
+        
+        const container = document.getElementById('resultContainer');
+        container.innerHTML = "";
+
+        // 分页处理
+        for (let i = 0; i < files.length; i += perPage) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = cols * itemW;
+            canvas.height = rows * itemH;
+
+            // 绘制白色底色
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let j = 0; j < perPage; j++) {
+                const idx = i + j;
+                if (idx >= files.length) break;
+
+                const img = await loadImage(URL.createObjectURL(files[idx]));
+                const r = j % cols;
+                const c = Math.floor(j / cols);
+                
+                // 绘制图片（居中裁切覆盖）
+                drawCoverImage(ctx, img, r * itemW, c * itemH, itemW, itemH);
+
+                // 绘制编号
+                drawNumber(ctx, startNum + idx, r * itemW, c * itemH, itemW, itemH);
             }
 
-            output.innerHTML = ""; // 清空上次内容
-            const files = Array.from(fileInput.files);
-            const totalPages = Math.ceil(files.length / imagesPerPage);
-
-            for (let p = 0; p < totalPages; p++) {
-                // 创建页容器
-                const pageWrapper = document.createElement('div');
-                
-                const info = document.createElement('div');
-                info.className = "page-info";
-                info.innerText = `第 ${p + 1} 张拼图`;
-                pageWrapper.appendChild(info);
-
-                const grid = document.createElement('div');
-                grid.className = "grid-page";
-                grid.style.gridTemplateColumns = `repeat(${cols}, ${baseWidth}px)`;
-                grid.style.gridTemplateRows = `repeat(${rows}, ${baseHeight}px)`;
-
-                // 填充当前页的图片
-                for (let i = 0; i < imagesPerPage; i++) {
-                    const fileIndex = p * imagesPerPage + i;
-                    const wrapper = document.createElement('div');
-                    wrapper.className = "img-wrapper";
-                    wrapper.style.width = baseWidth + "px";
-                    wrapper.style.height = baseHeight + "px";
-
-                    if (fileIndex < files.length) {
-                        // 有图片的情况
-                        const img = document.createElement('img');
-                        img.src = URL.createObjectURL(files[fileIndex]);
-                        
-                        const tag = document.createElement('span');
-                        tag.className = "number-tag";
-                        tag.innerText = startNum + fileIndex;
-
-                        wrapper.appendChild(img);
-                        wrapper.appendChild(tag);
-                    } else {
-                        // 空白位的情况
-                        wrapper.classList.add('empty-slot');
-                    }
-                    grid.appendChild(wrapper);
-                }
-                
-                pageWrapper.appendChild(grid);
-                output.appendChild(pageWrapper);
-            }
+            const finalImg = document.createElement('img');
+            finalImg.src = canvas.toDataURL('image/jpeg', 0.9);
+            finalImg.className = "result-img";
+            container.appendChild(finalImg);
         }
-    </script>
+
+        btn.innerText = "生成完成！";
+        document.getElementById('tip').style.display = "block";
+    }
+
+    function loadImage(url) {
+        return new Promise(res => {
+            const img = new Image();
+            img.onload = () => res(img);
+            img.src = url;
+        });
+    }
+
+    function drawCoverImage(ctx, img, x, y, w, h) {
+        const imgRatio = img.width / img.height;
+        const targetRatio = w / h;
+        let sx, sy, sw, sh;
+
+        if (imgRatio > targetRatio) {
+            sh = img.height;
+            sw = sh * targetRatio;
+            sx = (img.width - sw) / 2;
+            sy = 0;
+        } else {
+            sw = img.width;
+            sh = sw / targetRatio;
+            sx = 0;
+            sy = (img.height - sh) / 2;
+        }
+        ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+    }
+
+    function drawNumber(ctx, num, x, y, w, h) {
+        const size = parseInt(document.getElementById('fontSize').value);
+        const color = document.getElementById('fontColor').value;
+        const stroke = document.getElementById('strokeColor').value;
+        const pos = document.getElementById('pos').value;
+        const hasShadow = document.getElementById('shadow').value === 'yes';
+
+        ctx.font = `bold ${size}px Palatino, serif`;
+        ctx.fillStyle = color;
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = size / 8;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        if (hasShadow) {
+            ctx.shadowColor = "rgba(0,0,0,0.5)";
+            ctx.shadowBlur = 10;
+        } else {
+            ctx.shadowBlur = 0;
+        }
+
+        let tx, ty;
+        const padding = size * 0.8;
+
+        if (pos === 'lt') { tx = x + padding; ty = y + padding; }
+        else if (pos === 'rt') { tx = x + w - padding; ty = y + padding; }
+        else if (pos === 'lb') { tx = x + padding; ty = y + h - padding; }
+        else if (pos === 'rb') { tx = x + w - padding; ty = y + h - padding; }
+        else { tx = x + w/2; ty = y + h/2; }
+
+        ctx.strokeText(num, tx, ty);
+        ctx.fillText(num, tx, ty);
+        // 重置阴影避免影响后续绘制
+        ctx.shadowBlur = 0;
+    }
+</script>
+
 </body>
 </html>
-
