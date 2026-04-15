@@ -8,7 +8,6 @@
     <title>Kaki拼图工具-禁止二传</title>
     <style>
         :root {
-            /* 默认：格调冷灰方案 - 背景已改为 #D7DEE4 */
             --bg: #D7DEE4;            
             --panel-bg: rgba(255, 255, 255, 0.9); 
             --text-brown: #333333;    
@@ -18,52 +17,55 @@
             --btn-swap-pink: #5F5F60; 
             --btn-del-bg: #8A8A8A;
             --selected-border: #5F5F60;
+            --divider-color: #DCDCDC;
         }
         body { font-family: 'Palatino', 'Georgia', serif; background-color: var(--bg); color: var(--text-brown); margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; transition: background-color 0.3s; }
         .container { width: 100%; max-width: 600px; }
-        .panel { background: var(--panel-bg); border: 1px solid var(--accent-pink); border-radius: 20px; padding: 20px; box-shadow: 0 8px 25px rgba(51, 51, 51, 0.1); margin-bottom: 20px; transition: border 0.3s; }
+        .panel { background: var(--panel-bg); border: 1px solid var(--accent-pink); border-radius: 20px; padding: 20px; box-shadow: 0 8px 25px rgba(51, 51, 51, 0.1); margin-bottom: 20px; transition: border 0.3s, background 0.3s; }
         h2 { text-align: center; color: var(--text-brown); letter-spacing: 1px; font-weight: normal; margin-top: 0; font-family: 'Dancing Script', cursive; font-size: 2.5rem; }
         .section-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: bold; color: var(--section-header); margin: 15px 0 10px; padding-bottom: 5px; border-bottom: 1px solid var(--accent-pink); transition: border-bottom 0.3s, color 0.3s; }
         
-        .sub-divider { border-top: 1px solid var(--accent-blue); margin: 15px 0; opacity: 0.6; transition: border-top 0.3s; }
+        .sub-divider { border-top: 1px solid var(--divider-color); margin: 15px 0; opacity: 0.6; transition: border-top 0.3s; }
 
         .file-upload-wrapper { position: relative; width: 80px; overflow: hidden; }
-        #fileInput, #stickerInput { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; }
-        .file-label { background: var(--accent-blue); padding: 5px 10px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; display: inline-block; transition: background 0.3s; }
+        #fileInput, #stickerInput, #textureInput { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; }
+        .file-label { background: var(--accent-blue); color: var(--gray-btn-text, var(--text-brown)); padding: 5px 10px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; display: inline-block; transition: background 0.3s, color 0.3s; }
         .preview-pool { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 10px; margin-top: 10px; max-height: 200px; overflow: auto; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 12px; border: 1px dashed var(--accent-pink); transition: border 0.3s; }
         
         .thumb-wrapper { position: relative; cursor: pointer; }
         .thumb-wrapper img { width: 100%; height: 65px; object-fit: cover; border-radius: 6px; display: block; transition: border 0.2s, opacity 0.2s; }
-        .thumb-badge { position: absolute; top: 2px; right: 2px; background: var(--btn-swap-pink); color: white; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; font-family: sans-serif; z-index: 10; transition: background 0.3s; }
+        .thumb-badge { position: absolute; top: -6px; right: -6px; background: var(--btn-swap-pink); color: white; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; font-family: sans-serif; z-index: 10; transition: background 0.3s; }
         
         .thumb-wrapper.selected img { border: 3px solid var(--selected-border); box-sizing: border-box; opacity: 0.85; }
 
         .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .full-width { grid-column: span 2; }
         label { display: block; font-size: 0.75rem; margin-bottom: 4px; padding-left: 4px; font-weight: 500;}
-        input[type="number"], input[type="text"], select { width: 100%; padding: 10px; border: 1px solid var(--accent-blue); border-radius: 10px; box-sizing: border-box; background: white; color: var(--text-brown); outline: none; transition: border 0.3s; }
+        /* 修改：支持独立的输入框文字颜色变量 */
+        input[type="number"], input[type="text"], select { width: 100%; padding: 10px; border: 1px solid var(--accent-blue); border-radius: 10px; box-sizing: border-box; background: white; color: var(--input-text, var(--text-brown)); outline: none; transition: border 0.3s; }
         input[type="color"] { -webkit-appearance: none; width: 40px; height: 40px; border: 2px solid var(--accent-blue); border-radius: 4px; cursor: pointer; padding: 0; background: none; transition: border 0.3s; }
         input[type="range"] { width: 85%; appearance: none; background: transparent; padding: 0; margin: 15px 0 0 4px; display: block; }
         input[type="range"]::-webkit-slider-runnable-track { height: 6px; background: var(--accent-blue); border-radius: 3px; transition: background 0.3s; }
         input[type="range"]::-webkit-slider-thumb { appearance: none; height: 16px; width: 16px; border-radius: 50%; background: var(--text-brown); margin-top: -5px; }
         .setting-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; }
         
-        .btn-main { width: 100%; padding: 14px; background: var(--accent-pink); color: var(--text-brown); border: none; border-radius: 20px; font-size: 0.95rem; font-weight: bold; cursor: pointer; margin-bottom: 10px; transition: background 0.3s, border 0.2s; }
-        .btn-swap { background: var(--btn-swap-pink); color: white; }
-        
-        /* 更新拼图按钮的基础样式 */
-        .btn-update { color: white; border: 1px solid rgba(0,0,0,0.1); background: var(--btn-swap-pink); }
+        /* 修改：支持通用主按钮文字颜色变量，解决背景和文字同色的问题 */
+        .btn-main { width: 100%; padding: 14px; background: var(--accent-pink); color: var(--btn-main-text, var(--text-brown)); border: none; border-radius: 20px; font-size: 0.95rem; font-weight: bold; cursor: pointer; margin-bottom: 10px; transition: background 0.3s, border 0.2s, color 0.3s; }
+        /* 修改：支持粉色按钮文字颜色变量 */
+        .btn-swap { background: var(--btn-swap-pink); color: var(--btn-swap-text, white); }
+        /* 修改：支持更新拼图按钮使用独立的背景和文字颜色变量 */
+        .btn-update { color: var(--update-btn-text, white); border: 1px solid rgba(0,0,0,0.1); background: var(--update-btn-bg, var(--btn-swap-pink)); }
 
         .toggle-switch { appearance: none; width: 40px; height: 20px; background: #ddd; border-radius: 20px; position: relative; cursor: pointer; }
         .toggle-switch:checked { background: var(--accent-pink); }
         .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; background: white; border-radius: 50%; transition: 0.3s; }
         .toggle-switch:checked::after { left: 22px; }
         .font-preview-box { height: 120px; background: var(--accent-blue); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-top: 10px; border: 1px dashed var(--btn-swap-pink); overflow: hidden; position: relative; transition: background 0.3s, border 0.3s; }
-        #previewCanvas, #stickerPreviewCanvas { width: 100%; height: 100%; }
+        #previewCanvas, #stickerPreviewCanvas, #texturePreviewCanvas { width: 100%; height: 100%; }
         #resultContainer img { width: 100%; border-radius: 15px; margin-top: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(51, 51, 51, 0.7); z-index: 1000; align-items: center; justify-content: center; }
-        .modal-box { background: var(--bg); padding: 20px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; }
+        .modal-box { background: var(--bg); padding: 20px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; transition: background 0.3s; }
         
         .btn-group { display: flex; gap: 10px; margin-top: 10px; }
         .btn-del { flex: 1; background: var(--btn-del-bg); color: white; transition: background 0.3s; } 
@@ -82,13 +84,14 @@
             <option value="gray">格调冷灰 (默认)</option>
             <option value="mint">薄荷生巧</option>
             <option value="rococo">洛可可粉</option>
+            <option value="darkPink">黑乳酪莓</option>
         </select>
 
         <div class="section-header"><span>图片导入</span><div class="file-upload-wrapper"><div class="file-label">选择图片</div><input type="file" id="fileInput" multiple accept="image/*"></div></div>
         <div class="preview-pool" id="pool"></div>
         <div style="margin-top: 15px;">
             <button class="btn-main btn-swap" id="swapBtn" onclick="toggleSwapMode()">调换图片</button>
-            <button class="btn-main" style="background:var(--accent-blue)" onclick="clearStorage()">清空已存图片</button>
+            <button class="btn-main" style="background:var(--accent-blue); color:var(--gray-btn-text, var(--text-brown))" onclick="clearStorage()">清空已存图片</button>
         </div>
 
         <div class="section-header"><span>拼图参数</span></div>
@@ -125,11 +128,40 @@
                 <div style="flex:0 0 45px; text-align:center"><label>颜色</label><input type="color" id="shColor" value="#000000" oninput="updatePreview()"></div>
             </div>
 
+            <div class="sub-divider"></div>
+
             <div class="setting-row">
                 <div style="flex:1"><label>编号位置</label><select id="pos" onchange="updatePreview()"><option value="rb">右下</option><option value="lb">左下</option><option value="rt">右上</option><option value="lt">左上</option><option value="cc">中心</option></select></div>
                 <div style="flex:1"><label>编号大小</label><input type="number" id="fSize" value="150" oninput="updatePreview()"></div>
             </div>
             <div class="font-preview-box" id="previewBox"><canvas id="previewCanvas"></canvas></div>
+        </div>
+
+        <div class="section-header"><span>底纹设置</span><input type="checkbox" class="toggle-switch" id="textureEnable" onchange="toggleTextureSection()"></div>
+        <div id="textureSettings" class="setting-row" style="display:none; align-items: stretch; margin-bottom: 25px;">
+            <div class="font-preview-box" id="texturePreviewBox" style="flex:1; margin-top:0; min-height: 160px; cursor: pointer;" onclick="openTextureModal()">
+                <canvas id="texturePreviewCanvas"></canvas>
+            </div>
+            <div style="flex:1.5; display:flex; flex-direction:column; justify-content:space-between; padding-left:5px;">
+                <div class="file-upload-wrapper" style="width:100%;">
+                    <div class="file-label" style="text-align:center; display:block;">导入底纹</div>
+                    <input type="file" id="textureInput" accept="image/*">
+                </div>
+                <div>
+                    <label>底纹效果</label>
+                    <select id="textureBlendMode" onchange="updateTexturePreview()" style="margin-bottom: 5px;">
+                        <option value="source-over">正常</option>
+                        <option value="multiply">正片叠底</option>
+                        <option value="screen">滤色</option>
+                        <option value="overlay">叠加</option>
+                        <option value="soft-light">柔光</option>
+                    </select>
+                </div>
+                <div>
+                    <label>不透明度</label>
+                    <input type="range" id="textureAlpha" value="0.5" step="0.1" min="0" max="1" oninput="updateTexturePreview()">
+                </div>
+            </div>
         </div>
 
         <div class="section-header"><span>遮挡图片</span><input type="checkbox" class="toggle-switch" id="soldEnable" onchange="toggleSoldSection()"></div>
@@ -138,6 +170,8 @@
                 <label>遮挡编号 (支持逗号/顿号/横杠，如: 1, 2-10, 35)</label>
                 <input type="text" id="soldNumbers" placeholder="例如: 1, 2-5, 8、9.10">
             </div>
+
+            <div class="section-header" style="border:none; margin:0 0 10px 0;"><span>被遮挡图片显示编号</span><input type="checkbox" class="toggle-switch" id="soldNumEnable" checked></div>
             
             <div class="section-header" style="border:none; margin:0"><span>自定义遮挡贴纸</span><input type="checkbox" class="toggle-switch" id="stickerEnable" onchange="toggleStickerSection()"></div>
             <div id="stickerSettings" class="setting-row" style="display:none; align-items: stretch; margin-bottom: 25px;">
@@ -160,7 +194,7 @@
         
         <div id="downloadGroup" style="display:none;">
             <div class="btn-group">
-                <button class="btn-main" style="background:var(--accent-blue)" onclick="downloadAllSingle()">单张下载</button>
+                <button class="btn-main" style="background:var(--accent-blue); color:var(--gray-btn-text, var(--text-brown))" onclick="downloadAllSingle()">单张下载</button>
                 <button class="btn-main btn-swap" id="zipDownloadBtn" onclick="downloadZip()">ZIP 打包下载</button>
             </div>
         </div>
@@ -173,30 +207,69 @@
         <h3>图片预览</h3>
         <img id="modalImg" style="width:100%;">
         <div class="btn-group">
-            <button class="btn-main btn-del btn-flex-1" onclick="deleteCurrentImage()">删除</button>
             <button class="btn-main btn-flex-3" onclick="closeModal('viewModal')">关闭</button>
+            <button class="btn-main btn-del btn-flex-1" onclick="deleteCurrentImage()">删除</button>
         </div>
     </div>
 </div>
 
 <div class="modal-overlay" id="swapModal"><div class="modal-box"><h3>调换排序</h3><p id="swapText"></p><div style="display:flex; gap:10px;"><button class="btn-main btn-swap" onclick="confirmSwap()">确定</button><button class="btn-main" style="background:#ddd" onclick="closeModal('swapModal'); exitSwapMode();">取消</button></div></div></div>
 
+<div class="modal-overlay" id="textureViewModal">
+    <div class="modal-box">
+        <h3>底纹预览</h3>
+        <img id="textureModalImg" style="width:100%; border-radius: 10px; margin-bottom: 10px;">
+        <button class="btn-main" onclick="closeModal('textureViewModal')" style="margin-bottom: 0;">关闭</button>
+    </div>
+</div>
+
 <script>
     let db, currentFiles = [], isSwapMode = false, swapSelection = [], currentPreviewIndex = -1;
     let generatedCanvases = []; 
     let customStickerImg = null;
+    let customTextureImg = null; 
 
     const themes = {
-        gray: { bg: '#D7DEE4', accentPink: '#C0C0C0', accentBlue: '#DCDCDC', textBrown: '#333333', btnSwap: '#5F5F60', section: '#A0A0A3', btnDel: '#8A8A8A', selectedBorder: '#5F5F60' },
-        mint: { bg: '#F9FAF4', accentPink: '#C6DDDC', accentBlue: '#CADED9', textBrown: '#4E342E', btnSwap: '#4E342E', section: '#4E342E', btnDel: '#795548', selectedBorder: '#4E342E' },
-        rococo: { bg: '#FFF1F3', accentPink: '#E8C5C8', accentBlue: '#F1E1E3', textBrown: '#7A5C5C', btnSwap: '#D4A5A5', section: '#D4A5A5', btnDel: '#E08283', selectedBorder: '#D4A5A5' }
+        gray: { bg: '#D7DEE4', accentPink: '#C0C0C0', accentBlue: '#DCDCDC', textBrown: '#333333', btnSwap: '#5F5F60', section: '#A0A0A3', btnDel: '#8A8A8A', selectedBorder: '#5F5F60', divider: '#DCDCDC' },
+        mint: { bg: '#F9FAF4', accentPink: '#C6DDDC', accentBlue: '#CADED9', textBrown: '#4E342E', btnSwap: '#4E342E', section: '#4E342E', btnDel: '#795548', selectedBorder: '#4E342E', divider: '#E4EFEA' },
+        rococo: { bg: '#FFF1F3', accentPink: '#E8C5C8', accentBlue: '#F1E1E3', textBrown: '#7A5C5C', btnSwap: '#D4A5A5', section: '#D4A5A5', btnDel: '#E08283', selectedBorder: '#D4A5A5', divider: '#F1E1E3' },
+        // 专门针对黑乳酪莓做出的细致颜色配置隔离，不动其他主题的任何规则
+        darkPink: {
+            bg: '#2d2e33',               
+            panelBg: '#1F2125', 
+            textBrown: '#d97f97',        
+            section: '#e2abb4',          
+            accentPink: '#d97f97',       
+            accentBlue: '#7b7b83',       
+            btnSwap: '#d97f97',          
+            btnDel: '#7b7b83',           
+            selectedBorder: '#d97f97',   
+            divider: '#7b7b83',          
+            grayBtnText: '#ffffff',      
+            inputText: '#8c445a',        
+            updateBtnBg: '#7b7b83',      
+            updateBtnText: '#ffffff',    
+            btnSwapText: '#ffffff',
+            btnMainText: '#ffffff'       // 增加：用于主按钮文字变为白色
+        }
     };
 
     function changeTheme() {
         const selected = document.getElementById('themeSelector').value;
         const t = themes[selected];
         const root = document.documentElement;
+        
         root.style.setProperty('--bg', t.bg);
+        root.style.setProperty('--panel-bg', t.panelBg || 'rgba(255, 255, 255, 0.9)'); 
+        root.style.setProperty('--gray-btn-text', t.grayBtnText || t.textBrown);
+        
+        // 动态赋值输入框颜色、更新拼图按钮颜色和粉色按钮颜色等，如果该主题没设定，则 fallback 到原来的默认变量
+        root.style.setProperty('--input-text', t.inputText || t.textBrown);
+        root.style.setProperty('--update-btn-bg', t.updateBtnBg || t.btnSwap);
+        root.style.setProperty('--update-btn-text', t.updateBtnText || 'white');
+        root.style.setProperty('--btn-swap-text', t.btnSwapText || 'white');
+        root.style.setProperty('--btn-main-text', t.btnMainText || t.textBrown);
+
         root.style.setProperty('--accent-pink', t.accentPink);
         root.style.setProperty('--accent-blue', t.accentBlue);
         root.style.setProperty('--text-brown', t.textBrown);
@@ -204,18 +277,15 @@
         root.style.setProperty('--section-header', t.section);
         root.style.setProperty('--btn-del-bg', t.btnDel);
         root.style.setProperty('--selected-border', t.selectedBorder);
-        
-        // 同步更新拼图按钮颜色为 btnSwap 颜色
-        const updateBtn = document.getElementById('updateSoldBtn');
-        if(updateBtn) updateBtn.style.backgroundColor = t.btnSwap;
+        root.style.setProperty('--divider-color', t.divider); 
     }
 
     const request = indexedDB.open("KakiDB", 1);
     request.onupgradeneeded = e => { e.target.result.createObjectStore("store"); };
-    request.onsuccess = e => { db = e.target.result; loadFromDB(); changeTheme(); }; // 初始化主题颜色
+    request.onsuccess = e => { db = e.target.result; loadFromDB(); changeTheme(); }; 
 
     function saveToDB() { const tx = db.transaction("store", "readwrite"); tx.objectStore("store").put(currentFiles, "imageList"); tx.oncomplete = renderPool; }
-    function loadFromDB() { const tx = db.transaction("store", "readonly"); tx.objectStore("store").get("imageList").onsuccess = e => { if(e.target.result) currentFiles = e.target.result; renderPool(); updatePreview(); }; }
+    function loadFromDB() { const tx = db.transaction("store", "readonly"); tx.objectStore("store").get("imageList").onsuccess = e => { if(e.target.result) currentFiles = e.target.result; renderPool(); updatePreview(); if(document.getElementById('textureEnable')?.checked) updateTexturePreview(); }; }
 
     function renderPool() {
         const pool = document.getElementById('pool'); pool.innerHTML = "";
@@ -231,20 +301,44 @@
         });
     }
 
-    document.getElementById('fileInput').onchange = (e) => { currentFiles = currentFiles.concat(Array.from(e.target.files)); saveToDB(); e.target.value = ""; };
-    function clearStorage() { currentFiles = []; saveToDB(); document.getElementById('resultContainer').innerHTML = ""; document.getElementById('downloadGroup').style.display='none'; }
-    function deleteCurrentImage() { if (currentPreviewIndex > -1) { currentFiles.splice(currentPreviewIndex, 1); saveToDB(); closeModal('viewModal'); } }
+    document.getElementById('fileInput').onchange = (e) => { 
+        currentFiles = currentFiles.concat(Array.from(e.target.files)); 
+        saveToDB(); 
+        e.target.value = ""; 
+        if(document.getElementById('textureEnable').checked) updateTexturePreview();
+    };
+    function clearStorage() { 
+        currentFiles = []; 
+        saveToDB(); 
+        document.getElementById('resultContainer').innerHTML = ""; 
+        document.getElementById('downloadGroup').style.display='none'; 
+        if(document.getElementById('textureEnable').checked) updateTexturePreview();
+    }
+    function deleteCurrentImage() { if (currentPreviewIndex > -1) { currentFiles.splice(currentPreviewIndex, 1); saveToDB(); closeModal('viewModal'); if(document.getElementById('textureEnable').checked) updateTexturePreview(); } }
 
     function toggleRatioInput() { document.getElementById('customRatioUI').style.display = (document.getElementById('ratioSelect').value === 'custom') ? 'grid' : 'none'; }
     function toggleNumSection() { document.getElementById('numSettings').style.display = document.getElementById('numEnable').checked ? 'block' : 'none'; updatePreview(); }
     function toggleStrokeSection() { document.getElementById('strokeSettings').style.display = document.getElementById('sEnable').checked ? 'flex' : 'none'; updatePreview(); }
     function toggleShadowSection() { document.getElementById('shadowSettings').style.display = document.getElementById('shEnable').checked ? 'flex' : 'none'; updatePreview(); }
     
+    function toggleTextureSection() { 
+        document.getElementById('textureSettings').style.display = document.getElementById('textureEnable').checked ? 'flex' : 'none'; 
+        if(document.getElementById('textureEnable').checked) setTimeout(updateTexturePreview, 50);
+    }
+    
     function toggleSoldSection() { document.getElementById('soldSettings').style.display = document.getElementById('soldEnable').checked ? 'block' : 'none'; }
     function toggleStickerSection() { 
         document.getElementById('stickerSettings').style.display = document.getElementById('stickerEnable').checked ? 'flex' : 'none'; 
         if(document.getElementById('stickerEnable').checked) setTimeout(updateStickerPreview, 50);
     }
+
+    document.getElementById('textureInput').onchange = async (e) => {
+        if(e.target.files.length > 0) {
+            customTextureImg = await loadImage(URL.createObjectURL(e.target.files[0]));
+            updateTexturePreview();
+        }
+        e.target.value = "";
+    };
 
     document.getElementById('stickerInput').onchange = async (e) => {
         if(e.target.files.length > 0) {
@@ -253,6 +347,47 @@
         }
         e.target.value = "";
     };
+
+    function openTextureModal() {
+        const canvas = document.getElementById('texturePreviewCanvas');
+        if (!canvas) return;
+        document.getElementById('textureModalImg').src = canvas.toDataURL("image/png");
+        document.getElementById('textureViewModal').style.display = 'flex';
+    }
+
+    async function updateTexturePreview() {
+        const canvas = document.getElementById('texturePreviewCanvas');
+        const box = document.getElementById('texturePreviewBox');
+        if(!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const rect = box.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+        ctx.clearRect(0, 0, rect.width, rect.height);
+
+        if (currentFiles.length > 0) {
+            const firstImg = await loadImage(URL.createObjectURL(currentFiles[0]));
+            drawCover(ctx, firstImg, 0, 0, rect.width, rect.height);
+        } else {
+            ctx.fillStyle = "rgba(0,0,0,0.1)";
+            ctx.fillRect(0, 0, rect.width, rect.height);
+        }
+
+        if (customTextureImg) {
+            ctx.save();
+            ctx.globalCompositeOperation = document.getElementById('textureBlendMode').value;
+            ctx.globalAlpha = parseFloat(document.getElementById('textureAlpha').value);
+            drawCover(ctx, customTextureImg, 0, 0, rect.width, rect.height);
+            ctx.restore();
+        } else {
+            ctx.fillStyle = "rgba(0,0,0,0.4)";
+            ctx.font = "14px sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("暂无底纹", rect.width/2, rect.height/2);
+        }
+    }
 
     function updateStickerPreview() {
         const canvas = document.getElementById('stickerPreviewCanvas');
@@ -268,12 +403,10 @@
         if(customStickerImg) {
             const sizePct = parseInt(document.getElementById('stickerSize').value) / 100;
             const alpha = parseFloat(document.getElementById('stickerAlpha').value);
-            // 修复预览：允许图片在视觉上变大并超出预览框
             let targetW = rect.width * sizePct;
             let targetH = targetW * (customStickerImg.height / customStickerImg.width);
             
             ctx.globalAlpha = alpha;
-            // 居中绘制放大的图片
             ctx.drawImage(customStickerImg, (rect.width - targetW)/2, (rect.height - targetH)/2, targetW, targetH);
             ctx.globalAlpha = 1;
         } else {
@@ -281,7 +414,7 @@
             ctx.font = "14px sans-serif";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.fillText("暂无图片", rect.width/2, rect.height/2);
+            ctx.fillText("暂无贴纸", rect.width/2, rect.height/2);
         }
     }
 
@@ -389,7 +522,16 @@
                 const img = await loadImage(URL.createObjectURL(currentFiles[i+j]));
                 const x = (j % cols) * itemW, y = Math.floor(j / cols) * itemH;
                 const currentNumber = parseInt(document.getElementById('startNum').value) + i + j;
+                
                 drawCover(ctx, img, x, y, itemW, itemH);
+                
+                if (document.getElementById('textureEnable').checked && customTextureImg) {
+                    ctx.save();
+                    ctx.globalCompositeOperation = document.getElementById('textureBlendMode').value;
+                    ctx.globalAlpha = parseFloat(document.getElementById('textureAlpha').value);
+                    drawCover(ctx, customTextureImg, x, y, itemW, itemH);
+                    ctx.restore();
+                }
                 
                 if(soldSet.has(currentNumber)) {
                     if(document.getElementById('stickerEnable').checked && customStickerImg) {
@@ -403,7 +545,7 @@
                         ctx.restore();
                     } else {
                         ctx.save();
-                        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+                        ctx.fillStyle = 'rgba(0,0,0,0.7)';
                         ctx.fillRect(x, y, itemW, itemH);
                         const fontSize = itemW * 0.16;
                         ctx.font = `bold ${fontSize}px sans-serif`;
@@ -421,7 +563,12 @@
                     }
                 }
 
-                if(document.getElementById('numEnable').checked) {
+                let drawNum = document.getElementById('numEnable').checked;
+                if(soldSet.has(currentNumber) && !document.getElementById('soldNumEnable').checked) {
+                    drawNum = false;
+                }
+
+                if(drawNum) {
                     ctx.save(); ctx.translate(x, y);
                     const sWidth = document.getElementById('sEnable').checked ? parseInt(document.getElementById('sWidth').value) : 0;
                     drawComplexText(ctx, currentNumber, itemW, itemH, parseInt(document.getElementById('fSize').value), sWidth);
@@ -488,7 +635,7 @@
     }
 
     function toggleSwapMode() { isSwapMode = !isSwapMode; swapSelection = []; renderPool(); document.getElementById('swapBtn').innerText = isSwapMode ? "请点击两张图" : "调换图片"; }
-    function confirmSwap() { const [i, j] = swapSelection; [currentFiles[i], currentFiles[j]] = [currentFiles[j], currentFiles[i]]; closeModal('swapModal'); exitSwapMode(); saveToDB(); }
+    function confirmSwap() { const [i, j] = swapSelection; [currentFiles[i], currentFiles[j]] = [currentFiles[j], currentFiles[i]]; closeModal('swapModal'); exitSwapMode(); saveToDB(); if(document.getElementById('textureEnable').checked) updateTexturePreview(); }
     function exitSwapMode() { isSwapMode = false; document.getElementById('swapBtn').innerText = "调换图片"; swapSelection = []; renderPool(); }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; if(id==='viewModal') currentPreviewIndex = -1; }
     
